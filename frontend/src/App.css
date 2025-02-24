@@ -1,0 +1,24 @@
+/* App.css */
+.mainWrapper {
+  padding: 20px;
+  background-color: #f0f2f5;
+}
+
+.uploadWrapper {
+  margin-bottom: 20px;
+}
+
+.tableWrapper {
+  margin-top: 20px;
+}
+
+.loading {
+  text-align: center;
+  font-size: 24px;
+  color: #1890ff;
+}
+
+.pageTitle {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
