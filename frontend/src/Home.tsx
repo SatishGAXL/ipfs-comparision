@@ -10,6 +10,7 @@ import { NavLink } from "react-router-dom";
 
 import "./App.css";
 
+// Define the data structure for the table
 interface DataType {
   key: string;
   name: string;
@@ -17,16 +18,19 @@ interface DataType {
   ipfs_pin_hash: number;
 }
 
+// Define the columns for the Ant Design Table component
 const columns = [
   {
     title: "File Name",
     key: "name",
+    // Render the file name from the metadata
     render: (_: any, record: DataType) => <>{record.metadata.name}</>,
   },
   {
     title: "CID",
     dataIndex: "ipfs_pin_hash",
     key: "cid",
+    // Render the CID as a link to the IPFS gateway
     render: (text: string) => (
       <a target="_blank" href={`${IPFS_GATEWAY}/${text}`}>
         {text}
@@ -36,6 +40,7 @@ const columns = [
   {
     title: "Action",
     key: "action",
+    // Render a "Compare" link that navigates to the Compare page with the record as state
     render: (_: any, record: DataType) => (
       <Space size="middle">
         <NavLink to={`/compare/${record.ipfs_pin_hash}`} state={{ record }}>
@@ -48,10 +53,14 @@ const columns = [
 
 const { Dragger } = Upload;
 
+// Define the Home component, which takes a messageApi prop for displaying messages
 export const Home = ({ messageApi }: { messageApi: MessageInstance }) => {
+  // State for storing the fetched data
   const [data, setData] = useState<DataType[] | null>(null);
+  // State for tracking the loading status
   const [loading, setLoading] = useState(true);
 
+  // Function to fetch the files from the backend
   const fetchFiles = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/get-files`);
@@ -65,10 +74,12 @@ export const Home = ({ messageApi }: { messageApi: MessageInstance }) => {
     }
   };
 
+  // Define the props for the Ant Design Upload component
   const props: UploadProps = {
     name: "file",
     multiple: true,
     action: `${BACKEND_URL}/upload-file`,
+    // Function to run when the upload status changes
     onChange(info) {
       const { status } = info.file;
       if (status === "done") {
@@ -82,23 +93,28 @@ export const Home = ({ messageApi }: { messageApi: MessageInstance }) => {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
+    // Function to run when files are dropped on the component
     onDrop(e) {
       console.log("Dropped files", e.dataTransfer.files);
     },
   };
 
+  // Fetch the files when the component mounts
   useEffect(() => {
     fetchFiles();
   }, []);
 
   return (
     <div className="mainWrapper">
+      {/* Display a loading message while the data is being fetched */}
       {loading ? (
         <div className="loading">Loading...</div>
       ) : (
         <div>
+          {/* Page title */}
           <h1 className="pageTitle">Home</h1>
           <div className="uploadWrapper">
+            {/* Ant Design Dragger component for file uploads */}
             <Dragger {...props}>
               <p className="ant-upload-drag-icon">
                 <InboxOutlined />
@@ -112,6 +128,7 @@ export const Home = ({ messageApi }: { messageApi: MessageInstance }) => {
               </p>
             </Dragger>
           </div>
+          {/* Table to display the fetched data */}
           <div className="tableWrapper">
             <Table<DataType> columns={columns} dataSource={data || []} />
           </div>
